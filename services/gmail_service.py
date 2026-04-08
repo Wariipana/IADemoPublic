@@ -213,8 +213,16 @@ class GmailService:
     async def send_reply(self, original_email: dict, reply_body: str):
         service = self._get_service()
 
+        # Extraer solo el email del campo from, que puede venir como:
+        # "Nombre Apellido <email@domain.com>" o simplemente "email@domain.com"
+        raw_from = original_email["from"]
+        if "<" in raw_from and ">" in raw_from:
+            to_address = raw_from.split("<")[1].split(">")[0].strip()
+        else:
+            to_address = raw_from.strip()
+
         message = MIMEMultipart()
-        message["to"]          = original_email["from"]
+        message["to"]          = to_address
         message["subject"]     = f"Re: {original_email['subject']}"
         message["In-Reply-To"] = original_email["id"]
         message["References"]  = original_email["id"]
