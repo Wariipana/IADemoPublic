@@ -179,7 +179,8 @@ Usa datos reales. Si no hay pendiente, omite esa sección.
             "• Mantén el tono apropiado al contexto (formal o informal)\n"
             "• No inventes información que no esté en el borrador o en el correo original\n"
             "• Incluye saludo y despedida apropiados\n"
-            "• No incluyas marcadores como [Nombre] o [Tu firma]\n"
+            "• NUNCA incluyas marcadores como [Nombre], [Tu firma], [Tu nombre]\n"
+            "• SIEMPRE firma los mensajes como: [Redactado por un agente de IA]\n"
             "• Responde solo el texto del correo, sin explicaciones adicionales"
         )
         user = (
