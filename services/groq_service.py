@@ -38,8 +38,8 @@ EJEMPLO INCORRECTO (NO hagas esto):
 
 
 class GroqService:
-    async def _chat(self, system: str, user: str, max_tokens: int = 1024) -> str:
-        response = await client.chat.completions.create(
+    async def _chat(self, system: str, user: str, max_tokens: int = 1024, json_mode: bool = False) -> str:
+        kwargs = dict(
             model=settings.groq_model,
             messages=[
                 {"role": "system", "content": system},
@@ -48,6 +48,9 @@ class GroqService:
             max_tokens=max_tokens,
             temperature=0.3,
         )
+        if json_mode:
+            kwargs["response_format"] = {"type": "json_object"}
+        response = await client.chat.completions.create(**kwargs)
         return response.choices[0].message.content.strip()
 
     async def classify_email(self, email: dict) -> dict:
@@ -70,7 +73,7 @@ class GroqService:
             f"Asunto: {email['subject']}\n"
             f"Contenido: {email['body'][:1200] or email['snippet']}"
         )
-        raw = await self._chat(system, user, max_tokens=150)
+        raw = await self._chat(system, user, max_tokens=150, json_mode=True)
         try:
             clean  = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
             result = json.loads(clean)
