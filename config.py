@@ -6,12 +6,17 @@ class Settings(BaseSettings):
     groq_api_key: str
     groq_model: str = "meta-llama/llama-4-scout-17b-16e-instruct"
 
-    # Twilio
-    twilio_account_sid: str
-    twilio_auth_token: str
-    twilio_whatsapp_from: str   # "whatsapp:+14155238886" (sandbox)
-    twilio_whatsapp_to: str     # "whatsapp:+51xxxxxxxxx" (tu número)
-    twilio_content_sid: str     # "HXxxxx..." — SID del Content Template
+    # Twilio (legacy — reemplazado por wa_bridge)
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
+    twilio_whatsapp_from: str = ""
+    twilio_whatsapp_to: str = ""
+    twilio_content_sid: str = ""
+
+    # WhatsApp Bridge (VPS)
+    wa_bridge_url: str          # "http://tu-vps-ip:3000"
+    wa_bridge_secret: str       # clave secreta compartida con el bridge
+    wa_my_number: str           # tu número sin + ni espacios, ej: "51938368675"
 
     # Gmail OAuth2
     gmail_credentials_json: str  # path al credentials.json de Google

@@ -4,7 +4,7 @@ import uvicorn
 
 from services.gmail_service import GmailService
 from services.groq_service import GroqService
-from services.twilio_service import TwilioService
+from services.whatsapp_service import WhatsAppService
 from services.session_service import SessionService
 from config import settings
 
@@ -12,7 +12,7 @@ app = FastAPI(title="Email-WhatsApp Agent")
 
 gmail   = GmailService()
 groq    = GroqService()
-twilio  = TwilioService()
+twilio  = WhatsAppService()
 session = SessionService()   # solo guarda el último correo para el reply
 
 
@@ -78,9 +78,20 @@ def build_notification(email: dict, classification: dict) -> str:
 # ---------------------------------------------------------------------------
 @app.post("/webhook/whatsapp")
 async def whatsapp_webhook(request: Request, background: BackgroundTasks):
-    form   = await request.form()
-    body   = (form.get("Body") or "").strip()
-    sender = form.get("From", "")
+    # Verificar el secreto compartido con el bridge
+    secret = request.headers.get("x-api-secret", "")
+    if secret != settings.wa_bridge_secret:
+        return Response(status_code=401)
+
+    # El bridge envía JSON, Twilio enviaba form data
+    try:
+        data = await request.json()
+    except Exception:
+        form = await request.form()
+        data = {"Body": form.get("Body", ""), "From": form.get("From", "")}
+
+    body   = (data.get("Body") or "").strip()
+    sender = data.get("From", "")
     background.add_task(handle_whatsapp_message, body, sender)
     return Response(status_code=204)
 
