@@ -72,10 +72,15 @@ class GroqService:
         )
         raw = await self._chat(system, user, max_tokens=150)
         try:
-            clean = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-            return json.loads(clean)
+            clean  = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            result = json.loads(clean)
+            # Garantizar que siempre existan ambas claves
+            return {
+                "relevancia":    result.get("relevancia", "media"),
+                "resumen_corto": result.get("resumen_corto") or email.get("snippet", "")[:120],
+            }
         except Exception:
-            return {"relevancia": "media", "resumen_corto": email["snippet"][:120]}
+            return {"relevancia": "media", "resumen_corto": email.get("snippet", "")[:120]}
 
     async def summarize_emails(self, emails: list[dict], periodo: str = "hoy") -> str:
         """
@@ -94,7 +99,8 @@ class GroqService:
         # Paso 2 — construir el input estructurado para el LLM
         def fmt_email(e, c):
             remitente = e["from"].split("<")[0].strip() or e["from"]
-            return f"• *{remitente}* — {e['subject']}\n  {c['resumen_corto']}"
+            resumen   = c.get("resumen_corto") or e.get("snippet", "")[:120]
+            return f"• *{remitente}* — {e['subject']}\n  {resumen}"
 
         secciones = [f"📬 *Resumen — {periodo}* | {len(emails)} correos"]
 
@@ -179,8 +185,7 @@ Usa datos reales. Si no hay pendiente, omite esa sección.
             "• Mantén el tono apropiado al contexto (formal o informal)\n"
             "• No inventes información que no esté en el borrador o en el correo original\n"
             "• Incluye saludo y despedida apropiados\n"
-            "• NUNCA incluyas marcadores como [Nombre], [Tu firma], [Tu nombre]\n"
-            "• SIEMPRE firma los mensajes como: [Redactado por un agente de IA]\n"
+            "• No incluyas marcadores como [Nombre] o [Tu firma]\n"
             "• Responde solo el texto del correo, sin explicaciones adicionales"
         )
         user = (
