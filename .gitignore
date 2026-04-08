@@ -1,0 +1,24 @@
+# Variables de entorno — NUNCA subir al repo
+.env
+
+# Credenciales de Google — NUNCA subir al repo
+credentials.json
+token.json
+
+# Entorno virtual de Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log

@@ -1,0 +1,18 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic-settings==2.4.0
+
+# Gmail
+google-api-python-client==2.143.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
+
+# Groq — versión compatible con Python 3.13 y httpx>=0.28
+groq==0.11.0
+httpx==0.27.2
+
+# Forms
+python-multipart==0.0.9
+
+# Twilio
+twilio==9.3.0
